@@ -24,6 +24,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class StatsController {
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private final StatsService statsService;
 
     @PostMapping("/hit")
@@ -45,6 +46,6 @@ public class StatsController {
     private LocalDateTime parseDateTimeParam(String param) {
         return LocalDateTime.parse(
                 URLDecoder.decode(param, StandardCharsets.UTF_8),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 }

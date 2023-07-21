@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StatsClient {
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private final RestTemplate restTemplate;
 
     public StatsClient(String statsUrl, RestTemplateBuilder builder) {
@@ -40,8 +41,8 @@ public class StatsClient {
     public StatsDto[] getStats(LocalDateTime start, LocalDateTime end, boolean unique, String[] uris) {
         StringBuilder url = new StringBuilder("/stats?start={start}&end={end}");
         Map<String, Object> params = new HashMap<>();
-        params.put("start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        params.put("end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        params.put("start", start.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
+        params.put("end", end.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
 
         if (unique) {
             params.put("unique", true);
