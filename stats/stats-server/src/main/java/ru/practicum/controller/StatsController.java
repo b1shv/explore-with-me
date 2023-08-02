@@ -51,8 +51,9 @@ public class StatsController {
         return statsService.getStats(parseDateTimeParam(start), parseDateTimeParam(end), unique, uris);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public Map<String, String> handleNegativeCount(final ValidationException e) {
+    public Map<String, String> handleBadRequest(final ValidationException e) {
         return Map.of(
                 "status", "BAD_REQUEST",
                 "reason", "Incorrectly made request.",
