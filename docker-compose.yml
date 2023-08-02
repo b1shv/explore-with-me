@@ -1,9 +1,9 @@
 version: '3.1'
 services:
   ewm:
-    build: ewm
-    image: ewm
-    container_name: ewm
+    build: ewm-service
+    image: ewm-service
+    container_name: ewm-service
     ports:
       - "8080:8080"
     depends_on:

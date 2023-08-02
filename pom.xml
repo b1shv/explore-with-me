@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>stats</module>
-        <module>ewm</module>
+        <module>ewm-service</module>
         <module>stats/stats-server</module>
         <module>stats/stats-dto</module>
         <module>stats/stats-client</module>
