@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEventDate {
     String message() default "Field: eventDate. Error: must be not null and 2 hours after now";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

@@ -14,7 +14,7 @@ public class EventDateValidator implements ConstraintValidator<ValidEventDate, E
 
     @Override
     public boolean isValid(EventDto eventDto, ConstraintValidatorContext constraintValidatorContext) {
-        if(eventDto.getEventDate() == null) {
+        if (eventDto.getEventDate() == null) {
             return true;
         }
         return eventDto.getEventDate().isAfter(LocalDateTime.now().plusHours(2));
