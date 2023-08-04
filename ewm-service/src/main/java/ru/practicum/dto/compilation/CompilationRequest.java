@@ -16,10 +16,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompilationRequest {
-    Boolean pinned;
-    List<Long> events;
     @NotBlank(groups = {Create.class}, message = "Field: title. Error: must not be blank")
     @Size(groups = {Create.class, Update.class}, min = 1, max = 50,
             message = "Field: name. Must be between 1 and 50 characters long")
     private String title;
+
+    private Boolean pinned;
+    private List<Long> events;
 }

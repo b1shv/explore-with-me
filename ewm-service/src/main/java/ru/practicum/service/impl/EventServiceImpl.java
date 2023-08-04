@@ -12,7 +12,8 @@ import ru.practicum.controller.params.SearchParamsPublic;
 import ru.practicum.dto.event.EventDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.dto.event.UpdateEventUserRequest;
-import ru.practicum.exception.ForbiddenException;
+import ru.practicum.exception.AccessDeniedException;
+import ru.practicum.exception.ObjectUpdateForbiddenException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.model.Event;
 import ru.practicum.model.QEvent;
@@ -125,10 +126,10 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, eventId)));
 
         if (eventToUpdate.getInitiator().getId() != userId) {
-            throw new ForbiddenException(String.format("User with id=%d can't update event with id=%d", userId, eventId));
+            throw new AccessDeniedException(String.format("User with id=%d can't update event with id=%d", userId, eventId));
         }
         if (eventToUpdate.getState().equals(EventState.PUBLISHED)) {
-            throw new ForbiddenException(String.format("Event with id=%d has been published", eventId));
+            throw new ObjectUpdateForbiddenException(String.format("Event with id=%d has been published", eventId));
         }
         if (eventToUpdate.getState().equals(EventState.REJECTED) && eventDto.getStateAction() == null) {
             eventToUpdate.setState(EventState.PENDING);
@@ -149,12 +150,12 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, eventId)));
         if (eventDto.getStateAction() != null) {
             if (eventToUpdate.getState().equals(EventState.PUBLISHED)) {
-                throw new ForbiddenException(String.format("Event with id=%d is already published", eventId));
+                throw new ObjectUpdateForbiddenException(String.format("Event with id=%d is already published", eventId));
             }
             if ((eventToUpdate.getState().equals(EventState.REJECTED)
                     || eventToUpdate.getState().equals(EventState.CANCELED))
                     && eventDto.getStateAction().equals(AdminStateAction.PUBLISH_EVENT)) {
-                throw new ForbiddenException(String.format(
+                throw new ObjectUpdateForbiddenException(String.format(
                         "Event with id=%d is can't be published because it was rejected or canceled", eventId));
             }
             if (eventToUpdate.getState().equals(EventState.PENDING)

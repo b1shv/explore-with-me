@@ -3,7 +3,8 @@ package ru.practicum.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.request.RequestUpdate;
-import ru.practicum.exception.ForbiddenException;
+import ru.practicum.exception.AccessDeniedException;
+import ru.practicum.exception.ObjectUpdateForbiddenException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.Event;
@@ -43,7 +44,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d is not found", eventId)));
         if (event.getInitiator().getId() != userId) {
-            throw new ForbiddenException(
+            throw new AccessDeniedException(
                     String.format("User with id=%d is not an initiator of event with id=%d", userId, eventId));
         }
         return toList(requestRepository.findAll(QParticipationRequest.participationRequest.eventId.eq(eventId)));
@@ -55,14 +56,14 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d is not found", request.getEventId())));
 
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new ForbiddenException(String.format("Event with id=%d is not published", request.getEventId()));
+            throw new AccessDeniedException(String.format("Event with id=%d is not published", request.getEventId()));
         }
         if (request.getRequesterId() == event.getInitiator().getId()) {
-            throw new ForbiddenException(String.format("User with id=%d is an initiator of event with id=%d",
+            throw new AccessDeniedException(String.format("User with id=%d is an initiator of event with id=%d",
                     request.getRequesterId(), request.getEventId()));
         }
         if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
-            throw new ForbiddenException("The participant limit has been reached");
+            throw new AccessDeniedException("The participant limit has been reached");
         }
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             request.setStatus(RequestState.CONFIRMED);
@@ -78,7 +79,7 @@ public class RequestServiceImpl implements RequestService {
         ParticipationRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException(String.format("Request with id=%d is not found", requestId)));
         if (request.getRequesterId() != userId) {
-            throw new ForbiddenException(String.format(
+            throw new AccessDeniedException(String.format(
                     "User with id=%d is not an owner of request with id=%d", userId, requestId));
         }
         if (request.getStatus().equals(RequestState.CONFIRMED)) {
@@ -102,7 +103,7 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d is not found", eventId)));
 
         if (event.getInitiator().getId() != userId) {
-            throw new ForbiddenException(
+            throw new AccessDeniedException(
                     String.format("User with id=%d is not an initiator of event with id=%d", userId, eventId));
         }
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
@@ -113,11 +114,11 @@ public class RequestServiceImpl implements RequestService {
                 requestRepository.findAll(QParticipationRequest.participationRequest.id.in(requestUpdate.getRequestIds())));
 
         if (requests.stream().anyMatch(request -> !request.getStatus().equals(RequestState.PENDING))) {
-            throw new ForbiddenException("Request must have status PENDING");
+            throw new ObjectUpdateForbiddenException("Request must have status PENDING");
         }
         if (requestUpdate.getStatus().equals(RequestUpdateState.CONFIRMED)) {
             if (event.getParticipantLimit() < event.getConfirmedRequests() + requestUpdate.getRequestIds().size()) {
-                throw new ForbiddenException("The participant limit has been reached");
+                throw new ObjectUpdateForbiddenException("The participant limit has been reached");
             }
             event.setConfirmedRequests(event.getConfirmedRequests() + requests.size());
             eventRepository.save(event);
