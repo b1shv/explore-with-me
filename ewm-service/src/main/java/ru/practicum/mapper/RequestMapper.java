@@ -2,7 +2,7 @@ package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.request.ParticipationRequestDto;
-import ru.practicum.dto.request.RequestUpdateResult;
+import ru.practicum.dto.request.RequestModerationResult;
 import ru.practicum.model.ParticipationRequest;
 import ru.practicum.model.state.RequestState;
 
@@ -37,17 +37,17 @@ public class RequestMapper {
                 .collect(Collectors.toList());
     }
 
-    public RequestUpdateResult toUpdateResult(List<ParticipationRequest> requests) {
-        RequestUpdateResult updateResult = new RequestUpdateResult();
+    public RequestModerationResult toModerationResult(List<ParticipationRequest> requests) {
+        RequestModerationResult moderationResult = new RequestModerationResult();
         requests.stream()
                 .map(this::toDto)
                 .forEach(request -> {
                     if (request.getStatus().equals(RequestState.CONFIRMED)) {
-                        updateResult.addConfirmedRequest(request);
+                        moderationResult.addConfirmedRequest(request);
                     } else {
-                        updateResult.addRejectedRequest(request);
+                        moderationResult.addRejectedRequest(request);
                     }
                 });
-        return updateResult;
+        return moderationResult;
     }
 }

@@ -13,13 +13,13 @@ import ru.practicum.dto.event.EventDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.exception.AccessDeniedException;
-import ru.practicum.exception.ObjectUpdateForbiddenException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.ObjectUpdateForbiddenException;
 import ru.practicum.model.Event;
 import ru.practicum.model.QEvent;
-import ru.practicum.model.state.AdminStateAction;
-import ru.practicum.model.state.EventState;
-import ru.practicum.model.state.UserStateAction;
+import ru.practicum.model.state.event.AdminStateAction;
+import ru.practicum.model.state.event.EventState;
+import ru.practicum.model.state.event.UserStateAction;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.service.CategoryService;
 import ru.practicum.service.EventService;
@@ -108,6 +108,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Event getEventById(long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, eventId)));
+    }
+
+    @Override
     public List<Event> getEventsByIds(List<Long> ids) {
         if (ids == null) {
             return Collections.emptyList();
@@ -181,6 +187,7 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(eventDto.getEventDate()).ifPresent(eventToUpdate::setEventDate);
         Optional.ofNullable(eventDto.getPaid()).ifPresent(eventToUpdate::setPaid);
         Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(eventToUpdate::setRequestModeration);
+        Optional.ofNullable(eventDto.getCommentModeration()).ifPresent(eventToUpdate::setCommentModeration);
         Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(eventToUpdate::setParticipantLimit);
         Optional.ofNullable(eventDto.getLocation()).ifPresent(location -> {
             eventToUpdate.setLatitude(location.getLat());

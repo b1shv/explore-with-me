@@ -30,8 +30,9 @@ import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.UserMapper;
 import ru.practicum.model.Compilation;
 import ru.practicum.model.Event;
-import ru.practicum.model.state.EventState;
+import ru.practicum.model.state.event.EventState;
 import ru.practicum.service.CategoryService;
+import ru.practicum.service.CommentService;
 import ru.practicum.service.CompilationService;
 import ru.practicum.service.EventService;
 import ru.practicum.service.StatsService;
@@ -64,6 +65,7 @@ public class AdminController {
     private final CompilationService compilationService;
     private final CompilationMapper compilationMapper;
     private final RangeValidator rangeValidator;
+    private final CommentService commentService;
 
     @GetMapping("/events")
     public List<EventFullDto> getAllEvents(@RequestParam(required = false) List<Long> users,
@@ -164,5 +166,12 @@ public class AdminController {
     public void deleteCompilation(@PathVariable long compilationId) {
         log.debug(String.format("DELETE /admin/compilations/%d", compilationId));
         compilationService.deleteCompilation(compilationId);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/comments/{commentId}")
+    public void deleteComment(@PathVariable long commentId) {
+        log.debug(String.format("DELETE /admin/comments/%d", commentId));
+        commentService.deleteComment(commentId);
     }
 }

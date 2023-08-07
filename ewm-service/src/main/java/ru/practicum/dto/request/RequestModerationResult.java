@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class RequestUpdateResult {
+public class RequestModerationResult {
     private final List<ParticipationRequestDto> confirmedRequests;
     private final List<ParticipationRequestDto> rejectedRequests;
 
-    public RequestUpdateResult() {
+    public RequestModerationResult() {
         this.confirmedRequests = new ArrayList<>();
         this.rejectedRequests = new ArrayList<>();
     }

@@ -45,4 +45,5 @@ public class EventDto {
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
+    private Boolean commentModeration;
 }

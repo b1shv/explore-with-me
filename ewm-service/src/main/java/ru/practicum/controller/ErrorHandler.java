@@ -40,7 +40,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({ObjectUpdateForbiddenException.class, AccessDeniedException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleForbidden(final RuntimeException e) {
+    public ErrorResponse handleForbidden(final Exception e) {
         log.warn(e.getMessage(), e);
         return ErrorResponse.builder()
                 .status("FORBIDDEN")
@@ -88,7 +88,7 @@ public class ErrorHandler {
             MissingServletRequestParameterException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequest(final RuntimeException e) {
+    public ErrorResponse handleBadRequest(final Exception e) {
         log.warn(e.getMessage(), e);
         return ErrorResponse.builder()
                 .status("BAD_REQUEST")

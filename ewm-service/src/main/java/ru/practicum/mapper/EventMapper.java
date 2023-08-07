@@ -9,7 +9,8 @@ import ru.practicum.dto.event.Location;
 import ru.practicum.model.Category;
 import ru.practicum.model.Event;
 import ru.practicum.model.User;
-import ru.practicum.model.state.EventState;
+import ru.practicum.model.state.CommentState;
+import ru.practicum.model.state.event.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
+    private final CommentMapper commentMapper;
 
     public Event toEvent(EventDto eventDto, Category category, User initiator) {
         return Event.builder()
@@ -37,11 +39,12 @@ public class EventMapper {
                 .state(EventState.PENDING)
                 .participantLimit(eventDto.getParticipantLimit() == null ? 0 : eventDto.getParticipantLimit())
                 .requestModeration(eventDto.getRequestModeration() == null || eventDto.getRequestModeration())
+                .commentModeration(eventDto.getCommentModeration() != null && eventDto.getCommentModeration())
                 .build();
     }
 
     public EventFullDto toFullDto(Event event) {
-        return EventFullDto.builder()
+        EventFullDto eventFullDto = EventFullDto.builder()
                 .id(event.getId())
                 .title(event.getTitle())
                 .annotation(event.getAnnotation())
@@ -55,9 +58,18 @@ public class EventMapper {
                 .state(event.getState())
                 .participantLimit(event.getParticipantLimit())
                 .requestModeration(event.getRequestModeration())
+                .commentModeration(event.getCommentModeration())
                 .publishedOn(event.getPublishedOn())
                 .confirmedRequests(event.getConfirmedRequests())
                 .build();
+
+        if (event.getComments() != null) {
+            eventFullDto.setComments(event.getComments().stream()
+                    .filter(comment -> comment.getStatus().equals(CommentState.PUBLISHED))
+                    .map(commentMapper::toDto)
+                    .collect(Collectors.toList()));
+        }
+        return eventFullDto;
     }
 
     public EventFullDto toFullDto(Event event, long views) {
