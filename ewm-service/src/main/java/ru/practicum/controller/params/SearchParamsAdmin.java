@@ -3,7 +3,7 @@ package ru.practicum.controller.params;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.model.state.EventState;
+import ru.practicum.model.state.event.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;

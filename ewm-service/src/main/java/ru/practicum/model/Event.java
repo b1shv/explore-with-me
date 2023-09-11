@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.model.state.EventState;
+import ru.practicum.model.state.event.EventState;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,8 +16,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -71,10 +73,16 @@ public class Event {
     @Column(name = "request_moderation", nullable = false)
     private Boolean requestModeration;
 
+    @Column(name = "comment_moderation", nullable = false)
+    private Boolean commentModeration;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventState state;
 
     @Column(name = "confirmed_requests")
     private int confirmedRequests;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private List<Comment> comments;
 }

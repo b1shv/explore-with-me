@@ -1,6 +1,6 @@
 package ru.practicum.dto.event;
 
-import ru.practicum.model.state.UserStateAction;
+import ru.practicum.model.state.event.UserStateAction;
 
 import java.util.Objects;
 

@@ -20,6 +20,8 @@ public interface EventService {
 
     Event getUserEventById(long eventId, long initiatorId);
 
+    Event getEventById(long eventId);
+
     List<Event> getEventsByIds(List<Long> ids);
 
     Event addEvent(Event event);

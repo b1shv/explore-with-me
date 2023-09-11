@@ -1,6 +1,6 @@
 package ru.practicum.dto.event;
 
-import ru.practicum.model.state.AdminStateAction;
+import ru.practicum.model.state.event.AdminStateAction;
 
 import java.util.Objects;
 

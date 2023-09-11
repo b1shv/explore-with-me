@@ -2,17 +2,17 @@ package ru.practicum.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.dto.request.RequestUpdate;
+import ru.practicum.dto.request.RequestModerationRequest;
 import ru.practicum.exception.AccessDeniedException;
-import ru.practicum.exception.ObjectUpdateForbiddenException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.ObjectUpdateForbiddenException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.Event;
 import ru.practicum.model.ParticipationRequest;
 import ru.practicum.model.QParticipationRequest;
-import ru.practicum.model.state.EventState;
 import ru.practicum.model.state.RequestState;
 import ru.practicum.model.state.RequestUpdateState;
+import ru.practicum.model.state.event.EventState;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
@@ -94,7 +94,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<ParticipationRequest> updateRequestStatus(long userId, long eventId, RequestUpdate requestUpdate) {
+    public List<ParticipationRequest> updateRequestStatus(long userId, long eventId, RequestModerationRequest requestModerationRequest) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with id=%d is not found", userId));
         }
@@ -111,13 +111,13 @@ public class RequestServiceImpl implements RequestService {
         }
 
         List<ParticipationRequest> requests = toList(
-                requestRepository.findAll(QParticipationRequest.participationRequest.id.in(requestUpdate.getRequestIds())));
+                requestRepository.findAll(QParticipationRequest.participationRequest.id.in(requestModerationRequest.getRequestIds())));
 
         if (requests.stream().anyMatch(request -> !request.getStatus().equals(RequestState.PENDING))) {
             throw new ObjectUpdateForbiddenException("Request must have status PENDING");
         }
-        if (requestUpdate.getStatus().equals(RequestUpdateState.CONFIRMED)) {
-            if (event.getParticipantLimit() < event.getConfirmedRequests() + requestUpdate.getRequestIds().size()) {
+        if (requestModerationRequest.getStatus().equals(RequestUpdateState.CONFIRMED)) {
+            if (event.getParticipantLimit() < event.getConfirmedRequests() + requestModerationRequest.getRequestIds().size()) {
                 throw new ObjectUpdateForbiddenException("The participant limit has been reached");
             }
             event.setConfirmedRequests(event.getConfirmedRequests() + requests.size());
@@ -125,7 +125,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         requests.forEach(request -> request.setStatus(
-                requestUpdate.getStatus().equals(RequestUpdateState.CONFIRMED) ? RequestState.CONFIRMED : RequestState.REJECTED));
+                requestModerationRequest.getStatus().equals(RequestUpdateState.CONFIRMED) ? RequestState.CONFIRMED : RequestState.REJECTED));
         return requestRepository.saveAll(requests);
     }
 

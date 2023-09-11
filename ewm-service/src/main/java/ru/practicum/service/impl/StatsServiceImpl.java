@@ -18,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StatsServiceImpl implements StatsService {
     private static final String EVENT_PUBLIC_URI = "/events/";
-    private static final String APP = "EWM";
+    private static final String APP_NAME = "EWM";
     private final StatsClient statsClient;
 
     public long getEventViews(Event event) {
@@ -55,7 +55,7 @@ public class StatsServiceImpl implements StatsService {
 
     public void hit(String uri, String ip) {
         statsClient.hit(HitDto.builder()
-                .app(APP)
+                .app(APP_NAME)
                 .ip(ip)
                 .uri(uri)
                 .timestamp(LocalDateTime.now())
